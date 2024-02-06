@@ -1,51 +1,49 @@
 ﻿namespace HæveAutomatenTests
 {
-    [TestClass]
     public class PinCodeTests
     {
-        [TestMethod]
-        public void ShowPin_ReturnCorrectPin()
+        [Theory]
+        [InlineData("1234", "1234")]
+        [InlineData("5678", "5678")]
+        public void ShowPin_ReturnCorrectPin(string pin, string expected)
         {
             // Arrange
-            string expectedPin = "1234";
-            PinCode pin = new PinCode(expectedPin);
-
-            // Act
-            string actuel = pin.Pin;
-
-            // Assert
-            Assert.AreEqual(expectedPin, actuel, "Not Correct Pin");
-        }
-        [TestMethod]
-        public void CheckPinInput_IsValid()
-        {
-            // Arrange
-            string pin = "1234";
-            string inputPin = "1234";
             PinCode pinCode = new PinCode(pin);
 
             // Act
-            bool condition = pinCode.CheckPinInput(inputPin);
+            string actuel = pinCode.Pin;
 
             // Assert
-            Assert.IsTrue(condition, "Wrong Pin");
+            Xunit.Assert.Equal(expected, actuel);
         }
-        [TestMethod]
-        public void ChangePin_ChangedToNewPin()
+        [Theory]
+        [InlineData("1234", "1234", true)]
+        [InlineData("1234", "5678", false)]
+        public void CheckPinInput_IsValid(string myPin, string inputPin, bool expected)
         {
             // Arrange
-            string startingPin = "1234";
-            string changedPin = "5678";
-            PinCode pin = new PinCode(startingPin);
-
-            string expectedPin = "5678";
+            PinCode pinCode = new PinCode(myPin);
 
             // Act
-            pin.ChangePin(changedPin);
-            string actualPin = pin.Pin;
+            bool actual = pinCode.CheckPinInput(inputPin);
 
             // Assert
-            Assert.AreEqual(expectedPin, actualPin, "Not Changed Correctly");
+            Assert.Equal(expected, actual);
+        }
+        [Theory]
+        [InlineData("1234", "5678", "5678")]
+        [InlineData("5678", "5228", "5228")]
+        public void ChangePin_ChangedToNewPin(string pin, string newPin, string expected)
+        {
+            // Arrange
+            PinCode pinCode = new PinCode(pin);
+
+            // Act
+            pinCode.ChangePin(newPin);
+            string actual = pinCode.Pin;
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
     }
 }

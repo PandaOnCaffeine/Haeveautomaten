@@ -9,34 +9,31 @@ namespace Hæveautomaten
     public class Konto
     {
         private readonly string _name;
-        private readonly string _pin;
+        private PinCode _pin;
         private decimal _balance;
         public Konto(string name, string pin, decimal balance)
         {
             _name = name;
-            _pin = pin;
+            _pin = new PinCode(pin);
             _balance = balance;
+        }
+        public string Name
+        {
+            get { return _name; }
+        }
+        public PinCode Pin
+        {
+            get { return _pin; }
         }
         public decimal Balance
         {
             get { return _balance; }
         }
-        public bool CheckPin(string pin)
-        {
-            if (_pin == pin)
-            {
-                return true;
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
         public void Deposit(decimal amount, string inputPin)
         {
-            if (CheckPin(inputPin))
+            if (!_pin.CheckPinInput(inputPin))
             {
-
+                throw new ArgumentException();
             }
 
             if (amount < 0)
@@ -48,7 +45,7 @@ namespace Hæveautomaten
         }
         public void Withdraw(decimal amount, string inputPin)
         {
-            if (!CheckPin(inputPin))
+            if (!_pin.CheckPinInput(inputPin))
             {
                 throw new Exception();
             }
@@ -67,7 +64,7 @@ namespace Hæveautomaten
         }
         public void Transfer(decimal transferAmount, string inputPin, Konto transferTo)
         {
-            if (!CheckPin(inputPin))
+            if (!_pin.CheckPinInput(inputPin))
             {
                 throw new ArgumentException();
             }

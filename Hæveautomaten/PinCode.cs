@@ -24,9 +24,10 @@ namespace Hæveautomaten
             {
                 throw new ArgumentNullException("null");
             }
+
             if (input != _pin)
             {
-                throw new ArgumentException("Not Correct pin");
+                return false;
             }
             else
             {

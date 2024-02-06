@@ -59,7 +59,7 @@ namespace Hæveautomaten
                 throw new ArgumentOutOfRangeException("index");
             }
 
-            if (!_clientList[index].CheckPin(inputPin))
+            if (_clientList[index].Pin.Pin != inputPin)
             {
                 throw new ArgumentException("Pin Not Correct");
             }

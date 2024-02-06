@@ -1,123 +1,84 @@
 namespace HæveAutomatenTests
 {
-    [TestClass]
     public class KontoTests
     {
-        [TestMethod]
-        public void Balance_VaildGet()
+        [Theory]
+        [InlineData(14.31, 14.31)]
+        public void Balance_VaildGet(decimal start, decimal expected)
         {
             // Arrange
-            decimal startingBalance = 14.31M;
-            decimal expected = 14.31M;
-
-            Konto account = new Konto("John", "1234", startingBalance);
+            Konto account = new Konto("John", "1234", start);
 
             // Act
             decimal actual = account.Balance;
 
             // Assert
-            Assert.AreEqual(expected, actual, 0.001M, "Account not correct balance");
+            Assert.Equal(expected, actual);
         }
-
-        [TestMethod]
-        public void CheckPin_WithValidPin()
+        [Theory]
+        [InlineData(12.45, 4.99, "1234", "1234", 7.46)]
+        [InlineData(12.45, 2.45, "6789", "6789", 10)]
+        public void Withdraw_WithValidAmount_WithCorrectPin(decimal balance, decimal withdrawl, string pin, string inputPin, decimal expected)
         {
             // Arrange
-            string pin = "1234";
-            string testPin = "1234";
-            Konto account = new Konto("john", pin, 15);
+            Konto account = new Konto("John", pin, balance);
 
             // Act
-            bool condition = account.CheckPin(testPin);
-
-            // Assert
-            Assert.IsTrue(condition, "Not correct Pin");
-        }
-        [TestMethod]
-        public void Withdraw_WithValidAmount_WithCorrectPin()
-        {
-            // Arrange
-            string testPin = "1234";
-
-            decimal startBalance = 12.45M;
-            decimal withdrawAmount = 4.99M;
-            decimal expected = 7.46M;
-
-            Konto account = new Konto("John", testPin, startBalance);
-
-            // Act
-            account.Withdraw(withdrawAmount, "1234");
-
-
-            // Assert
+            account.Withdraw(withdrawl, inputPin);
             decimal actual = account.Balance;
-            Assert.AreEqual(expected, actual, 0.001M, "Account not Withdrawn correctly");
-        }
-        [TestMethod]
-        public void Deposit_WithValidAmount_WithCorrectPin()
-        {
-            // Arrange
-            string testPin = "1234";
-
-            decimal startBalance = 12.45M;
-            decimal depositAmount = 4.99M;
-            decimal expected = 17.44M;
-
-            Konto account = new Konto("John", testPin, startBalance);
-
-            // Act
-            account.Deposit(depositAmount, "1234");
 
 
             // Assert
+            Assert.Equal(expected, actual);
+        }
+        [Theory]
+        [InlineData(12.45, 4.99, "1234", "1234", 17.44)]
+        [InlineData(4.99, 4.99, "1234", "1234", 9.98)]
+        public void Deposit_WithValidAmount_WithCorrectPin(decimal balance, decimal deposit, string pin, string inputPin, decimal expected)
+        {
+            // Arrange
+            Konto account = new Konto("John", pin, balance);
+
+            // Act
+            account.Deposit(deposit, inputPin);
             decimal actual = account.Balance;
-            Assert.AreEqual(expected, actual, 0.001M, "Account not deposited correctly");
-        }
-
-        [TestMethod]
-        public void Transfer_WithValidAmount()
-        {
-            // Arrange
-            decimal acc1Bal = 14.73M;
-            decimal acc2Bal = 7.41M;
-            decimal transferAmount = 3.12M;
-
-            decimal acc1Expected = 11.61M;
-            decimal acc2Expected = 10.53M;
-
-            Konto acc1 = new Konto("John", "1234", acc1Bal);
-            Konto acc2 = new Konto("Jones", "1234", acc2Bal);
-
-            // Act
-            acc1.Transfer(transferAmount, "1234", acc2);
 
 
             // Assert
-            decimal acc1Actual = acc1.Balance;
-            decimal acc2Actual = acc2.Balance;
-
-            Assert.AreEqual(acc1Expected, acc1Actual, 0.001M, "Account not Transfered correctly");
-            Assert.AreEqual(acc2Expected, acc2Actual, 0.001M, "Account not Transfered correctly");
+            Assert.Equal(expected, actual);
         }
-        [TestMethod]
-        public void TransferAccept_WithValidAmount()
+
+        [Theory]
+        [InlineData(14.73, 7.41, 3.12, 11.61, 10.53)]
+        public void Transfer_WithValidAmount(decimal bal1, decimal bal2, decimal transfer, decimal exp1, decimal exp2)
         {
             // Arrange
-            decimal accBal = 7.41M;
-            decimal transferAmount = 3.12M;
-
-            decimal accExpected = 10.53M;
-
-            Konto acc = new Konto("John", "1234", accBal);
+            Konto acc1 = new Konto("John", "1234", bal1);
+            Konto acc2 = new Konto("Jones", "1234", bal2);
 
             // Act
-            acc.TransferAccept(transferAmount);
+            acc1.Transfer(transfer, "1234", acc2);
+            decimal actual1 = acc1.Balance;
+            decimal actual2 = acc2.Balance;
 
 
             // Assert
-            decimal accActual = acc.Balance;
+            Assert.Equal(exp1, actual1);
+            Assert.Equal(exp2, actual2);
+        }
+        [Theory]
+        [InlineData(7.41, 3.12, 10.53)]
+        public void TransferAccept_WithValidAmount(decimal bal, decimal transfer, decimal expected)
+        {
+            // Arrange
+            Konto acc = new Konto("John", "1234", bal);
 
-            Assert.AreEqual(accExpected, accActual, 0.001M, "Account not TransferAccepted correctly");
+            // Act
+            acc.TransferAccept(transfer);
+            decimal actual = acc.Balance;
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
     }
 }
